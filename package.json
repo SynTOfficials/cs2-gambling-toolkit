@@ -1,0 +1,37 @@
+{
+  "name": "cs2-gambling-toolkit",
+  "version": "1.0.0",
+  "description": "Open-source verifier and calculators for CS2 gambling: provably-fair roll verification (HMAC-SHA256), case-opening expected value, and bonus wagering cost. Zero dependencies.",
+  "keywords": [
+    "cs2",
+    "counter-strike",
+    "provably-fair",
+    "gambling",
+    "verifier",
+    "hmac",
+    "expected-value",
+    "skin-gambling"
+  ],
+  "homepage": "https://www.syntskins.com/tools",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SynT8735/cs2-gambling-toolkit.git"
+  },
+  "license": "MIT",
+  "author": "SynTSkins (https://www.syntskins.com)",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "cs2-toolkit": "bin/cli.js"
+  },
+  "files": [
+    "src",
+    "bin"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
