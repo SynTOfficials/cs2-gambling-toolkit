@@ -99,7 +99,7 @@ switch (command) {
     }
 
     default:
-        console.log(`cs2-gambling-toolkit - https://github.com/SynT8735/cs2-gambling-toolkit
+        console.log(`cs2-gambling-toolkit - https://github.com/SynTOfficials/cs2-gambling-toolkit
 Hosted versions of these tools: https://www.syntskins.com/tools
 
 Commands:
