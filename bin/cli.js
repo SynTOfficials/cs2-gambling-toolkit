@@ -8,11 +8,16 @@
  *   cs2-toolkit ev       --price <n> --items "value:prob,value:prob,..."
  *   cs2-toolkit wagering --bonus <n> --multiplier <n> --edge <pct>
  *                        [--deposit <n>] [--applies-to bonus|deposit+bonus]
+ *   cs2-toolkit rakeback --edge <pct> --wager <n> [--rakeback <pct>] [--lossback <pct>]
+ *   cs2-toolkit bankroll --bankroll <n> --bet <n> --payout <mult> --edge <pct>
+ *                        --bets <n> [--runs <n>]
  */
 
 import { sha256Hex, verifyRoll } from '../src/fair.js';
 import { caseEv } from '../src/ev.js';
 import { bonusCost } from '../src/wagering.js';
+import { rakebackValue } from '../src/rakeback.js';
+import { simulateBankroll } from '../src/bankroll.js';
 
 function parseArgs(argv) {
     const args = {};
@@ -98,6 +103,48 @@ switch (command) {
         break;
     }
 
+    case 'rakeback': {
+        if (args['edge'] === undefined || args['wager'] === undefined) {
+            fail('rakeback requires --edge and --wager');
+        }
+        const result = rakebackValue({
+            edgePercent: Number(args['edge']),
+            monthlyWager: Number(args['wager']),
+            rakebackPercent: args['rakeback'] !== undefined ? Number(args['rakeback']) : 0,
+            lossbackPercent: args['lossback'] !== undefined ? Number(args['lossback']) : 0,
+        });
+        console.log('Gross monthly cost:   ' + result.grossMonthlyCost);
+        console.log('Returned as rakeback: ' + result.rakebackReturn);
+        console.log('Returned as lossback: ' + result.lossbackReturn);
+        console.log('Net monthly cost:     ' + result.netMonthlyCost);
+        console.log('Effective edge:       ' + result.effectiveEdgePercent + '%');
+        if (result.effectiveEdgePercent <= 0) {
+            console.log('WARNING: effective edge <= 0. Sustained negative-edge rewards do not exist - a cap, game weighting or expiry in the terms is doing the real work.');
+        }
+        break;
+    }
+
+    case 'bankroll': {
+        if (args['bankroll'] === undefined || args['bet'] === undefined || args['payout'] === undefined
+            || args['edge'] === undefined || args['bets'] === undefined) {
+            fail('bankroll requires --bankroll, --bet, --payout, --edge and --bets');
+        }
+        const result = simulateBankroll({
+            bankroll: Number(args['bankroll']),
+            bet: Number(args['bet']),
+            multiplier: Number(args['payout']),
+            edgePercent: Number(args['edge']),
+            bets: Number(args['bets']),
+            runs: args['runs'] !== undefined ? Number(args['runs']) : 5000,
+        });
+        console.log('Win probability:         ' + result.winProbabilityPercent + '% (pays ' + Number(args['payout']).toFixed(2) + 'x)');
+        console.log('Bust probability:        ' + result.bustPercent + '%  (' + result.runs + ' simulated sessions)');
+        console.log('Sessions ending ahead:   ' + result.profitPercent + '%');
+        console.log('Median ending bankroll:  ' + result.medianEndingBankroll);
+        console.log('Average ending bankroll: ' + result.meanEndingBankroll);
+        break;
+    }
+
     default:
         console.log(`cs2-gambling-toolkit - https://github.com/SynTOfficials/cs2-gambling-toolkit
 Hosted versions of these tools: https://www.syntskins.com/tools
@@ -110,6 +157,10 @@ Commands:
   ev        Case-opening expected value
             --price <n> --items "value:prob,value:prob,..."
   wagering  Expected cost of clearing a bonus
-            --bonus <n> --multiplier <n> --edge <pct> [--deposit <n>] [--applies-to bonus|deposit+bonus]`);
+            --bonus <n> --multiplier <n> --edge <pct> [--deposit <n>] [--applies-to bonus|deposit+bonus]
+  rakeback  Effective edge and monthly cost after rakeback/lossback rewards
+            --edge <pct> --wager <n> [--rakeback <pct>] [--lossback <pct>]
+  bankroll  Monte Carlo bankroll survival simulation of a flat-bet session
+            --bankroll <n> --bet <n> --payout <mult> --edge <pct> --bets <n> [--runs <n>]`);
         if (command !== undefined && command !== 'help' && command !== '--help') process.exit(1);
 }

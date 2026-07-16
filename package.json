@@ -1,7 +1,7 @@
 {
   "name": "cs2-gambling-toolkit",
-  "version": "1.0.0",
-  "description": "Open-source verifier and calculators for CS2 gambling: provably-fair roll verification (HMAC-SHA256), case-opening expected value, and bonus wagering cost. Zero dependencies.",
+  "version": "1.1.0",
+  "description": "Open-source verifier and calculators for CS2 gambling: provably-fair roll verification (HMAC-SHA256), case-opening expected value, bonus wagering cost, rakeback/lossback value, and Monte Carlo bankroll simulation. Zero dependencies.",
   "keywords": [
     "cs2",
     "counter-strike",
